@@ -3,79 +3,38 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 
+from .base_repository import BaseRepository
 
-class UserRepository:
 
-    @staticmethod
-    async def create(
+class UserRepository(BaseRepository[User]):
+
+    def __init__(
+        self,
         db: AsyncSession,
-        user: User,
-    ) -> User:
-        """
-        Create a new user.
-        """
+    ):
+        super().__init__(
+            db,
+            User,
+        )
 
-        db.add(user)
-
-        await db.commit()
-
-        await db.refresh(user)
-
-        return user
-
-    @staticmethod
     async def get_by_email(
-        db: AsyncSession,
+        self,
         email: str,
     ) -> User | None:
-        """
-        Get user by email.
-        """
 
-        result = await db.execute(
-            select(User).where(User.email == email)
+        result = await self.db.execute(
+            select(User).where(
+                User.email == email
+            )
         )
 
         return result.scalar_one_or_none()
 
-    @staticmethod
-    async def get_by_id(
-        db: AsyncSession,
-        user_id: int,
-    ) -> User | None:
-        """
-        Get user by id.
-        """
+    async def email_exists(
+        self,
+        email: str,
+    ) -> bool:
 
-        result = await db.execute(
-            select(User).where(User.id == user_id)
-        )
+        user = await self.get_by_email(email)
 
-        return result.scalar_one_or_none()
-
-    @staticmethod
-    async def get_all(
-        db: AsyncSession,
-    ) -> list[User]:
-        """
-        Get all users.
-        """
-
-        result = await db.execute(
-            select(User)
-        )
-
-        return list(result.scalars().all())
-
-    @staticmethod
-    async def delete(
-        db: AsyncSession,
-        user: User,
-    ) -> None:
-        """
-        Delete user.
-        """
-
-        await db.delete(user)
-
-        await db.commit()
+        return user is not None

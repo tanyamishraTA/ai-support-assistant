@@ -1,28 +1,22 @@
-from fastapi import Depends, FastAPI
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import FastAPI
 
-from app.database.session import get_db
+from app.api.auth import router as auth_router
+from app.middleware.exception_handler import (
+    register_exception_handlers,
+)
 
 app = FastAPI(
     title="AI Support Assistant",
     version="1.0.0",
 )
 
+register_exception_handlers(app)
+
+app.include_router(auth_router)
+
 
 @app.get("/")
 async def root():
     return {
-        "message": "AI Support Assistant API is running"
-    }
-
-
-@app.get("/health/db")
-async def database_health(
-    db: AsyncSession = Depends(get_db),
-):
-    await db.execute(text("SELECT 1"))
-
-    return {
-        "database": "connected"
+        "message": "AI Support Assistant API"
     }

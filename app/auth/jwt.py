@@ -3,16 +3,14 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 
 from app.config import settings
+from app.schemas.token import TokenPayload
 
-ALGORITHM = settings.ALGORITHM
 SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 def create_access_token(data: dict) -> str:
-    """
-    Create JWT access token.
-    """
 
     to_encode = data.copy()
 
@@ -20,11 +18,7 @@ def create_access_token(data: dict) -> str:
         minutes=ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
-    to_encode.update(
-        {
-            "exp": expire
-        }
-    )
+    to_encode.update({"exp": expire})
 
     return jwt.encode(
         to_encode,
@@ -33,10 +27,7 @@ def create_access_token(data: dict) -> str:
     )
 
 
-def decode_access_token(token: str) -> dict:
-    """
-    Decode JWT access token.
-    """
+def decode_access_token(token: str) -> TokenPayload | None:
 
     try:
 
@@ -46,8 +37,12 @@ def decode_access_token(token: str) -> dict:
             algorithms=[ALGORITHM],
         )
 
-        return payload
+        return TokenPayload(
+            sub=payload["sub"],
+            email=payload["email"],
+            role=payload["role"],
+        )
 
     except JWTError:
 
-        return {}
+        return None
