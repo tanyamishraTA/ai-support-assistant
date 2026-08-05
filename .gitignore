@@ -1,0 +1,105 @@
+# ==========================
+# Python
+# ==========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# ==========================
+# Environment Variables
+# ==========================
+.env
+
+# ==========================
+# IDE
+# ==========================
+.vscode/
+.idea/
+
+# ==========================
+# macOS
+# ==========================
+.DS_Store
+
+# ==========================
+# Logs
+# ==========================
+*.log
+logs/
+
+# ==========================
+# Testing
+# ==========================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ==========================
+# Type Checking
+# ==========================
+.mypy_cache/
+.pytype/
+
+# ==========================
+# Jupyter
+# ==========================
+.ipynb_checkpoints/
+
+# ==========================
+# Alembic
+# ==========================
+migrations/__pycache__/
+
+# ==========================
+# Build Files
+# ==========================
+build/
+dist/
+*.egg-info/
+
+# ==========================
+# Uploaded PDFs
+# ==========================
+data/uploads/*
+
+# Keep folder structure
+!data/uploads/.gitkeep
+
+# ==========================
+# Processed Files
+# ==========================
+data/processed/*
+
+!data/processed/.gitkeep
+
+# ==========================
+# Vector Database
+# ==========================
+qdrant_storage/
+
+# If using local Qdrant
+storage/
+
+# ==========================
+# SQLite (if ever used)
+# ==========================
+*.db
+*.sqlite3
+
+# ==========================
+# Docker
+# ==========================
+docker-compose.override.yml
+
+# ==========================
+# Secrets
+# ==========================
+*.pem
+*.key
+*.crt
