@@ -10,21 +10,27 @@ class AIService:
         provider: LLMProvider,
     ):
 
-        self.llm = LLMFactory.get_llm(provider)
+        self.llm = LLMFactory.get_llm(
+            provider
+        )
 
     def generate_response(
         self,
         question: str,
         context: str,
+        history: str,
     ) -> str:
 
         prompt = chat_prompt.invoke(
             {
                 "question": question,
                 "context": context,
+                "history": history,
             }
         )
 
-        response = self.llm.invoke(prompt)
+        response = self.llm.invoke(
+            prompt
+        )
 
         return response.content

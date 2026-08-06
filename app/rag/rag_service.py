@@ -45,9 +45,10 @@ class RAGService:
         return "\n\n".join(context)
 
     def ask(
-        self,
-        question: str,
-    ) -> str:
+    self,
+    question: str,
+    history: str = "",
+) -> str:
 
         documents = self.retrieval_service.retrieve(
             question=question,
@@ -60,4 +61,5 @@ class RAGService:
         return self.ai_service.generate_response(
             question=question,
             context=context,
+            history=history,
         )

@@ -12,7 +12,11 @@ class ChatRequest(BaseModel):
 
     provider: LLMProvider = LLMProvider.OLLAMA
 
+    conversation_id: int | None = None
+
 
 class ChatResponse(BaseModel):
 
     answer: str
+
+    conversation_id: int

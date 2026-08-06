@@ -1,17 +1,15 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.llm.base import LLMProvider
 from app.auth.current_user import get_current_user
+from app.database.session import get_db
 from app.models.user import User
-from app.rag.rag_service import RAGService
-from app.schemas.chat import (
-    ChatRequest,
-    ChatResponse,
-)
+from app.schemas.chat import ChatRequest, ChatResponse
+from app.services.chat_service import ChatService
 
 router = APIRouter(
     prefix="/chat",
-    tags=["AI Chat"],
+    tags=["Chat"],
 )
 
 
@@ -21,17 +19,26 @@ router = APIRouter(
 )
 async def chat(
     request: ChatRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(
+        get_current_user
+    ),
+    db: AsyncSession = Depends(
+        get_db
+    ),
 ):
 
-    rag_service = RAGService(
+    service = ChatService(
+        db=db,
         provider=request.provider,
     )
 
-    answer = rag_service.ask(
+    response = await service.chat(
+        user_id=current_user.id,
         question=request.question,
+        conversation_id=request.conversation_id,
     )
 
     return ChatResponse(
-        answer=answer,
+        answer=response["answer"],
+        conversation_id=response["conversation_id"],
     )
