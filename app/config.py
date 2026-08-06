@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     QDRANT_URL: str
     LLM_PROVIDER: str
 
+    EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore"
