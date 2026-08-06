@@ -5,6 +5,8 @@ from app.middleware.exception_handler import (
     register_exception_handlers,
 )
 
+from app.api.document import router as document_router
+
 app = FastAPI(
     title="AI Support Assistant",
     version="1.0.0",
@@ -13,6 +15,7 @@ app = FastAPI(
 register_exception_handlers(app)
 
 app.include_router(auth_router)
+app.include_router(document_router)
 
 
 @app.get("/")

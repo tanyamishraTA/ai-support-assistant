@@ -1,8 +1,8 @@
 """Initial schema
 
-Revision ID: 786945ace187
+Revision ID: 01e8c6297d85
 Revises: 
-Create Date: 2026-08-05 18:38:36.837329
+Create Date: 2026-08-06 12:44:32.326840
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '786945ace187'
+revision: str = '01e8c6297d85'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -54,10 +54,16 @@ def upgrade() -> None:
     op.create_table('documents',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('filename', sa.String(length=255), nullable=False),
+    sa.Column('stored_filename', sa.String(length=255), nullable=False),
+    sa.Column('file_path', sa.String(length=500), nullable=False),
+    sa.Column('file_size', sa.BigInteger(), nullable=False),
+    sa.Column('mime_type', sa.String(length=100), nullable=False),
+    sa.Column('status', sa.Enum('UPLOADED', 'PROCESSING', 'INDEXED', 'FAILED', name='documentstatus'), nullable=False),
     sa.Column('uploaded_by', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['uploaded_by'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('stored_filename')
     )
     op.create_table('security_logs',
     sa.Column('id', sa.Integer(), nullable=False),

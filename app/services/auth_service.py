@@ -61,18 +61,17 @@ class AuthService:
 
     async def login(
         self,
-        credentials: LoginRequest,
-    ) -> TokenResponse:
+        email: str,
+        password: str,
+    )-> TokenResponse:
 
-        user = await self.user_repository.get_by_email(
-            credentials.email
-        )
+        user = await self.user_repository.get_by_email(email)
 
         if user is None:
             raise InvalidCredentialsException()
 
         if not verify_password(
-            credentials.password,
+            password,
             user.password_hash,
         ):
             raise InvalidCredentialsException()
