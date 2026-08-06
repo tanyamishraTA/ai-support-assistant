@@ -51,6 +51,7 @@ langchain-core==1.5.3
 langchain-experimental==0.4.2
 langchain-google-genai==4.3.2
 langchain-huggingface==1.2.2
+langchain-ollama==1.1.0
 langchain-protocol==0.0.18
 langchain-qdrant==1.1.0
 langchain-text-splitters==1.1.2
@@ -71,6 +72,7 @@ multidict==6.7.1
 narwhals==2.24.0
 networkx==3.6.1
 numpy==2.5.1
+ollama==0.6.2
 onnxruntime==1.28.0
 orjson==3.11.9
 ormsgpack==1.12.2

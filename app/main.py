@@ -6,6 +6,7 @@ from app.middleware.exception_handler import (
 )
 
 from app.api.document import router as document_router
+from app.api import chat
 
 app = FastAPI(
     title="AI Support Assistant",
@@ -16,6 +17,7 @@ register_exception_handlers(app)
 
 app.include_router(auth_router)
 app.include_router(document_router)
+app.include_router(chat.router)
 
 
 @app.get("/")

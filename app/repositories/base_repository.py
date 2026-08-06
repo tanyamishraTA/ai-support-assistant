@@ -31,6 +31,28 @@ class BaseRepository(Generic[ModelType]):
 
         return obj
 
+    async def commit(self):
+
+        await self.db.commit()
+
+    async def refresh(
+        self,
+        obj: ModelType,
+    ):
+
+        await self.db.refresh(obj)
+
+    async def create_without_commit(
+        self,
+        obj: ModelType,
+    ):
+
+        self.db.add(obj)
+
+        await self.db.flush()
+
+        return obj
+
     async def get_by_id(
         self,
         obj_id: int,

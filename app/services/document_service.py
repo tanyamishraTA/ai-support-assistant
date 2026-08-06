@@ -4,6 +4,7 @@ from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.document import Document
+from app.rag.ingestion_service import IngestionService
 from app.repositories.document_repository import DocumentRepository
 from app.schemas.document import DocumentResponse
 from app.storage.local_storage import LocalStorageService
@@ -15,7 +16,10 @@ class DocumentService:
         self,
         db: AsyncSession,
     ):
+        self.db = db
+
         self.repository = DocumentRepository(db)
+
         self.storage = LocalStorageService()
 
     async def upload_document(
@@ -29,7 +33,7 @@ class DocumentService:
             file
         )
 
-        # Create database object
+        # Create database record
         document = Document(
             filename=file.filename,
             stored_filename=stored_filename,
@@ -39,10 +43,28 @@ class DocumentService:
             uploaded_by=uploaded_by,
         )
 
-        # Save metadata
         document = await self.repository.create(
             document
         )
+
+        # Automatically ingest into Qdrant
+        ingestion_service = IngestionService(
+            self.db
+        )
+
+        try:
+
+            await ingestion_service.ingest_document(
+                document.id
+            )
+
+        except Exception:
+
+            document.status = document.status.FAILED
+
+            await self.repository.commit()
+
+            raise
 
         return DocumentResponse.model_validate(
             document

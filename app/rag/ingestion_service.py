@@ -8,6 +8,7 @@ from app.rag.loaders.pdf_loader import PDFLoader
 from app.rag.vectorstores.qdrant_store import QdrantStore
 
 
+
 class IngestionService:
 
     def __init__(self, db: AsyncSession):
