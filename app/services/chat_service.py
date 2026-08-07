@@ -6,6 +6,7 @@ from app.ai.llm.base import LLMProvider
 from app.rag.rag_service import RAGService
 from app.services.ai_log_service import AILogService
 from app.services.conversation_service import ConversationService
+from app.services.intent_service import IntentService
 
 
 class ChatService:
@@ -26,9 +27,8 @@ class ChatService:
             db
         )
 
-        self.rag_service = RAGService(
-            provider=provider,
-        )
+        # Lazy initialization
+        self.rag_service = None
 
     async def chat(
         self,
@@ -82,10 +82,42 @@ class ChatService:
             question,
         )
 
-        # Measure response time
+        # ---------------------------------
+        # Handle greetings WITHOUT RAG
+        # ---------------------------------
+        if IntentService.is_small_talk(question):
+
+            answer = {
+                "answer": "Hello! 👋 How can I help you with your organization's documents today?",
+                "sources": [],
+            }
+
+            await self.conversation_service.save_assistant_message(
+                conversation.id,
+                answer["answer"],
+            )
+
+            return {
+                "conversation_id": conversation.id,
+                "answer": answer["answer"],
+                "sources": answer["sources"],
+            }
+
+        # ---------------------------------
+        # Initialize RAG only when required
+        # ---------------------------------
+        if self.rag_service is None:
+
+            self.rag_service = RAGService(
+                provider=self.provider,
+            )
+
+        # ---------------------------------
+        # Normal RAG pipeline
+        # ---------------------------------
+
         start_time = time.perf_counter()
 
-        # Generate response
         response = self.rag_service.ask(
             question=question,
             history=history,
@@ -95,13 +127,11 @@ class ChatService:
             time.perf_counter() - start_time
         ) * 1000
 
-        # Save assistant message
         await self.conversation_service.save_assistant_message(
             conversation.id,
             response["answer"],
         )
 
-        # Log AI request
         await self.ai_log_service.create_log(
             user_id=user_id,
             conversation_id=conversation.id,
