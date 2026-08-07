@@ -3,17 +3,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.current_user import get_current_user
 from app.database.session import get_db
+from app.models.security_log import SecurityEvent
 from app.models.user import User
 from app.schemas.conversation import (
     ConversationResponse,
     MessageResponse,
 )
 from app.services.conversation_service import ConversationService
+from app.services.security_log_service import SecurityLogService
 
 router = APIRouter(
     prefix="/conversations",
     tags=["Conversations"],
 )
+
 
 @router.get(
     "",
@@ -38,6 +41,7 @@ async def get_conversations(
 
     return conversations
 
+
 @router.get(
     "/{conversation_id}",
     response_model=list[MessageResponse],
@@ -53,10 +57,11 @@ async def get_messages(
 ):
 
     service = ConversationService(db)
+    security_log_service = SecurityLogService(db)
 
     conversation = await service.get_conversation(
-    conversation_id
-)
+        conversation_id
+    )
 
     if conversation is None:
 
@@ -68,6 +73,13 @@ async def get_messages(
     # Authorization check
     if conversation.user_id != current_user.id:
 
+        await security_log_service.log(
+            event=SecurityEvent.CONVERSATION_ACCESS_DENIED,
+            endpoint=f"/conversations/{conversation_id}",
+            details="User attempted to access another user's conversation.",
+            user_id=current_user.id,
+        )
+
         raise HTTPException(
             status_code=403,
             detail="Access denied.",
@@ -76,6 +88,7 @@ async def get_messages(
     return await service.get_history(
         conversation_id
     )
+
 
 @router.delete(
     "/{conversation_id}",
@@ -91,9 +104,11 @@ async def delete_conversation(
 ):
 
     service = ConversationService(db)
+    security_log_service = SecurityLogService(db)
 
     conversation = await service.get_conversation(
-    conversation_id)
+        conversation_id
+    )
 
     if conversation is None:
 
@@ -104,6 +119,13 @@ async def delete_conversation(
 
     # Authorization check
     if conversation.user_id != current_user.id:
+
+        await security_log_service.log(
+            event=SecurityEvent.CONVERSATION_ACCESS_DENIED,
+            endpoint=f"/conversations/{conversation_id}",
+            details="User attempted to delete another user's conversation.",
+            user_id=current_user.id,
+        )
 
         raise HTTPException(
             status_code=403,

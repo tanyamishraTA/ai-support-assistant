@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
 
-from app.config import settings
+from app.core.config import settings
 from app.schemas.token import TokenPayload
 
 SECRET_KEY = settings.SECRET_KEY

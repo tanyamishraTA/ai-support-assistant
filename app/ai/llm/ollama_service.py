@@ -1,6 +1,6 @@
 from langchain_ollama import ChatOllama
 
-from app.config import settings
+from app.core.config import settings
 
 
 class OllamaService:

@@ -20,19 +20,25 @@ class RetrievalService:
         k: int = 10,
     ) -> list[Document]:
 
+        # Retrieve top-k documents using Hybrid Search
         documents = self.vector_store.similarity_search(
             query=question,
             k=k,
         )
 
-        print(f"\nRetrieved {len(documents)} documents before reranking.")
+        print(
+            f"\nRetrieved {len(documents)} documents before reranking."
+        )
 
+        # Re-rank retrieved documents
         documents = self.reranker.rerank(
             query=question,
             documents=documents,
             top_k=3,
         )
 
-        print(f"Returning {len(documents)} documents after reranking.")
+        print(
+            f"Returning {len(documents)} documents after reranking."
+        )
 
         return documents

@@ -11,7 +11,7 @@ from langchain_qdrant import (
     RetrievalMode,
 )
 
-from app.config import settings
+from app.core.config import settings
 from app.rag.embeddings.embedding_service import EmbeddingService
 
 

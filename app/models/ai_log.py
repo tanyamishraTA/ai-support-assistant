@@ -16,6 +16,12 @@ class AILog(Base):
         ForeignKey("users.id")
     )
 
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("conversations.id")
+    )
+
+    provider: Mapped[str]
+
     prompt: Mapped[str] = mapped_column(Text)
 
     response: Mapped[str] = mapped_column(Text)
@@ -26,8 +32,6 @@ class AILog(Base):
 
     estimated_cost: Mapped[float] = mapped_column(Float)
 
-    from sqlalchemy.sql import func
-
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -35,5 +39,9 @@ class AILog(Base):
 
     user = relationship(
         "User",
-        back_populates="ai_logs"
+        back_populates="ai_logs",
+    )
+
+    conversation = relationship(
+        "Conversation",
     )
