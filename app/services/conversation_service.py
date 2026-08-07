@@ -85,3 +85,32 @@ class ConversationService:
         return await self.message_repository.create(
             message
         )
+
+    async def get_user_conversations(
+        self,
+        user_id: int,
+    ):
+
+        return await self.conversation_repository.get_by_user(
+            user_id
+        )
+
+    async def delete_conversation(
+        self,
+        conversation_id: int,
+    ):
+
+        conversation = (
+            await self.conversation_repository.get_by_id(
+                conversation_id
+            )
+        )
+
+        if conversation is None:
+            raise ValueError(
+                "Conversation not found."
+            )
+
+        await self.conversation_repository.delete(
+            conversation
+        )

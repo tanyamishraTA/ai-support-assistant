@@ -72,18 +72,18 @@ class ChatService:
         )
 
         # Ask RAG
-        answer = self.rag_service.ask(
+        response = self.rag_service.ask(
             question=question,
             history=history,
         )
 
-        # Save assistant message
         await self.conversation_service.save_assistant_message(
             conversation.id,
-            answer,
+            response["answer"],
         )
 
         return {
             "conversation_id": conversation.id,
-            "answer": answer,
+            "answer": response["answer"],
+            "sources": response["sources"],
         }

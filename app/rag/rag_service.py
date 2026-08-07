@@ -48,7 +48,7 @@ class RAGService:
     self,
     question: str,
     history: str = "",
-) -> str:
+):
 
         documents = self.retrieval_service.retrieve(
             question=question,
@@ -58,8 +58,37 @@ class RAGService:
             documents,
         )
 
-        return self.ai_service.generate_response(
+        answer = self.ai_service.generate_response(
             question=question,
             context=context,
             history=history,
         )
+
+        sources = []
+        seen = set()
+
+        for document in documents:
+
+            source = {
+                "document": document.metadata.get(
+                    "filename",
+                    "Unknown",
+                ),
+                "page": document.metadata.get(
+                    "page",
+                ),
+            }
+
+            key = (
+                source["document"],
+                source["page"],
+            )
+
+            if key not in seen:
+                seen.add(key)
+                sources.append(source)
+
+        return {
+            "answer": answer,
+            "sources": sources,
+        }

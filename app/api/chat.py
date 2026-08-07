@@ -39,6 +39,7 @@ async def chat(
     )
 
     return ChatResponse(
-        answer=response["answer"],
         conversation_id=response["conversation_id"],
+        answer=response["answer"],
+        sources=response["sources"],
     )

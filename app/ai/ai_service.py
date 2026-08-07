@@ -1,6 +1,11 @@
+import json
+
+from pydantic import ValidationError
+
 from app.ai.llm.base import LLMProvider
 from app.ai.llm.llm_factory import LLMFactory
 from app.ai.prompts.chat_prompt import chat_prompt
+from app.schemas.ai_response import AIResponse
 
 
 class AIService:
@@ -19,7 +24,7 @@ class AIService:
         question: str,
         context: str,
         history: str,
-    ) -> str:
+    ) -> AIResponse:
 
         prompt = chat_prompt.invoke(
             {
@@ -29,8 +34,6 @@ class AIService:
             }
         )
 
-        response = self.llm.invoke(
-            prompt
-        )
+        response = self.llm.invoke(prompt)
 
         return response.content

@@ -3,6 +3,11 @@ from pydantic import BaseModel, Field
 from app.ai.llm.base import LLMProvider
 
 
+class SourceResponse(BaseModel):
+    document: str
+    page: int | None = None
+
+
 class ChatRequest(BaseModel):
 
     question: str = Field(
@@ -17,6 +22,8 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
 
+    conversation_id: int
+
     answer: str
 
-    conversation_id: int
+    sources: list[SourceResponse]
